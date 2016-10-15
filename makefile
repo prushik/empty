@@ -6,6 +6,7 @@ test: bin/config.sh
 	bin/tests/00_configs.sh
 	bin/tests/01_netstat.sh
 	bin/tests/02_wget.sh
+	bin/tests/03_iptables.sh
 
 config:
 	bin/update_config.sh etc/cherokee/cherokee.conf 'server!bind!1!port' $(HTTP_PORT)
@@ -20,6 +21,16 @@ config:
 	bin/update_config.sh etc/cherokee/cherokee.conf 'vserver!20!ssl_certificate_file' '$(subst /,\/,$(SERVER_CERT))'
 	bin/update_config.sh etc/cherokee/cherokee.conf 'vserver!20!ssl_certificate_key_file' '$(subst /,\/,$(SERVER_KEY))'
 	echo $(SERVER_NAME) > etc/hostname
+	echo '*filter' > etc/iptables.rules
+	echo ':INPUT DROP [0:0]' >> etc/iptables.rules
+	echo ':FORWARD DROP [0:0]' >> etc/iptables.rules
+	echo ':OUTPUT ACCEPT [0:0]' >> etc/iptables.rules
+	echo >> etc/iptables.rules
+	for port in $(OPEN_PORTS) ; do \
+		echo '-A INPUT -p tcp --dport '$$port' -j ACCEPT' >> etc/iptables.rules; \
+	done
+	echo 'COMMIT' >> etc/iptables.rules
+
 
 deploy:
 	install etc/key.pem $(PREFIX)/etc/
@@ -28,7 +39,11 @@ deploy:
 	install etc/cherokee/cherokee.conf $(PREFIX)/etc/cherokee
 	-install -d $(PREFIX)$(WEBROOT)
 	install var/www/index.html $(PREFIX)$(WEBROOT)
+	install etc/iptables.rules $(PREFIX)/etc/
+	install etc/hostname $(PREFIX)/etc/
 ifeq ($(RESTART_SERVICE),1)
+	hostname $(PREFIX)/etc/hostname
+	-iptables-restore < $(PREFIX)/etc/iptables.rules
 	-/etc/init.d/cherokee restart
 else
 	@echo

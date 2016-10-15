@@ -68,7 +68,7 @@ fi
 #  Strict-Transport-Security: max-age=86400; includeSubdomains
 
 #verify SERVER_CERT
-wget https://$SERVER_NAME -O /dev/null -q --ca-certificate=$SERVER_CERT
+wget https://$SERVER_NAME -O /dev/null -q --ca-certificate=${PREFIX}${SERVER_CERT}
 
 if [ $? -eq 0 ]
 then

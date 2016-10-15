@@ -29,16 +29,16 @@ check_config()
 	return 0
 }
 
-check_config /etc/cherokee/cherokee.conf 'server!bind!1!port' $HTTP_PORT
-check_config /etc/cherokee/cherokee.conf 'server!bind!2!port' $HTTPS_PORT
-check_config /etc/cherokee/cherokee.conf 'server!bind!2!tls' 1
-check_config /etc/cherokee/cherokee.conf 'vserver!10!document_root' $WEBROOT
-check_config /etc/cherokee/cherokee.conf 'vserver!10!hsts' $HSTS
-check_config /etc/cherokee/cherokee.conf 'vserver!10!hsts!subdomains' $HSTS
-check_config /etc/cherokee/cherokee.conf 'vserver!20!document_root' $WEBROOT
-check_config /etc/cherokee/cherokee.conf 'vserver!20!hsts' $HSTS
-check_config /etc/cherokee/cherokee.conf 'vserver!20!hsts!subdomains' $HSTS
-check_config /etc/cherokee/cherokee.conf 'vserver!20!ssl_certificate_file' $SERVER_CERT
-check_config /etc/cherokee/cherokee.conf 'vserver!20!ssl_certificate_key_file' $SERVER_KEY
+check_config $PREFIX/etc/cherokee/cherokee.conf 'server!bind!1!port' $HTTP_PORT
+check_config $PREFIX/etc/cherokee/cherokee.conf 'server!bind!2!port' $HTTPS_PORT
+check_config $PREFIX/etc/cherokee/cherokee.conf 'server!bind!2!tls' 1
+check_config $PREFIX/etc/cherokee/cherokee.conf 'vserver!10!document_root' $WEBROOT
+check_config $PREFIX/etc/cherokee/cherokee.conf 'vserver!10!hsts' $HSTS
+check_config $PREFIX/etc/cherokee/cherokee.conf 'vserver!10!hsts!subdomains' $HSTS
+check_config $PREFIX/etc/cherokee/cherokee.conf 'vserver!20!document_root' $WEBROOT
+check_config $PREFIX/etc/cherokee/cherokee.conf 'vserver!20!hsts' $HSTS
+check_config $PREFIX/etc/cherokee/cherokee.conf 'vserver!20!hsts!subdomains' $HSTS
+check_config $PREFIX/etc/cherokee/cherokee.conf 'vserver!20!ssl_certificate_file' $SERVER_CERT
+check_config $PREFIX/etc/cherokee/cherokee.conf 'vserver!20!ssl_certificate_key_file' $SERVER_KEY
 
 display_total
