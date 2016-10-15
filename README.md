@@ -8,7 +8,7 @@ To deploy the configuration and server content (in production, the content would
 
 This will update configuration files if needed and deploy all configuration and content files, and restart the webserver service or warn that it might be needed.
 
-To perform the testsuite to verify configuration, either launch the tests via the provided web interface, or type:
+To perform the testsuite to verify configuration, type:
  make test
 
-This will perform all tests and report any issues in the configuration.
+This will perform all tests and report any issues in the configuration, or in the running deployment.
