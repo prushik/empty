@@ -3,8 +3,22 @@ include config.make
 
 
 test: bin/config.sh
+	bin/tests/00_configs.sh
 	bin/tests/01_netstat.sh
 	bin/tests/02_wget.sh	
+
+config:
+	bin/update_config.sh etc/cherokee/cherokee.conf 'server!bind!1!port' $(HTTP_PORT)
+	bin/update_config.sh etc/cherokee/cherokee.conf 'server!bind!2!port' $(HTTPS_PORT)
+	bin/update_config.sh etc/cherokee/cherokee.conf 'server!bind!2!tls' 1
+	bin/update_config.sh etc/cherokee/cherokee.conf 'vserver!10!document_root' $(WEBROOT)
+	bin/update_config.sh etc/cherokee/cherokee.conf 'vserver!10!hsts' $(HSTS)
+	bin/update_config.sh etc/cherokee/cherokee.conf 'vserver!10!hsts!subdomains' $(HSTS)
+	bin/update_config.sh etc/cherokee/cherokee.conf 'vserver!20!document_root' $(WEBROOT)
+	bin/update_config.sh etc/cherokee/cherokee.conf 'vserver!20!hsts' $(HSTS)
+	bin/update_config.sh etc/cherokee/cherokee.conf 'vserver!20!hsts!subdomains' $(HSTS)
+	bin/update_config.sh etc/cherokee/cherokee.conf 'vserver!20!ssl_certificate_file' $(SERVER_CERT)
+	bin/update_config.sh etc/cherokee/cherokee.conf 'vserver!20!ssl_certificate_key_file' $(SERVER_KEY)
 
 deploy:
 	install etc/key.pem $(PREFIX)/etc/

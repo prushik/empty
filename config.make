@@ -10,6 +10,9 @@ SERVER_KEY		?=	/etc/key.pem
 # set to location (full path) of server certificate
 SERVER_CERT		?=	/etc/cert.pem
 
+# set to hostname of server, must match certificate
+SERVER_NAME		?=	localhost
+
 # set to HTTP port and HTTPS port respectively
 HTTP_PORT		?=	80
 HTTPS_PORT		?=	443
@@ -17,7 +20,11 @@ HTTPS_PORT		?=	443
 # set to a space seperated list of ports allowed open
 OPEN_PORTS		?=	$(HTTP_PORT) $(HTTPS_PORT)
 
-# set to 1 if HSTS (HTTP Strict Transport Security) should be enable, otherwise leave unset or 0
+# set to 1 if unencrypted HTTP should be redirected, 0 otherwise
+HTTPS_REDIRECT	?=	1
+
+# set to 1 if HSTS (HTTP Strict Transport Security) should be enable, otherwise set to 0
+# note: due to cherokee's handling of HSTS, this implys HTTPS_REDIRECT
 HSTS			?=	1
 
 # set to 1 to restart services on deployment, or set to 0 to warn that services might need restarting
@@ -31,9 +38,11 @@ bin/config.sh: config.make
 	@echo "WEBROOT=$(WEBROOT)" >> bin/config.sh
 	@echo "SERVER_KEY=$(SERVER_KEY)" >> bin/config.sh
 	@echo "SERVER_CERT=$(SERVER_CERT)" >> bin/config.sh
+	@echo "SERVER_NAME=$(SERVER_NAME)" >> bin/config.sh
 	@echo "HTTP_PORT=$(HTTP_PORT)" >> bin/config.sh
 	@echo "HTTPS_PORT=$(HTTPS_PORT)" >> bin/config.sh
 	@echo "OPEN_PORTS=\"$(OPEN_PORTS)\"" >> bin/config.sh
+	@echo "HTTPS_REDIRECT=$(HTTPS_REDIRECT)" >> bin/config.sh
 	@echo "HSTS=$(HSTS)" >> bin/config.sh
 	@echo "RESTART_SERVICE=$(RESTART_SERVICE)" >> bin/config.sh
 
