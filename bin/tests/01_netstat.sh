@@ -2,7 +2,9 @@
 
 source bin/config.sh
 
-netstat -velvetnwp | tail -n +3 | while IFS='' read -r line || [[ -n "$line" ]]
+source bin/tests/common.sh
+
+while IFS='' read -r line || [[ -n "$line" ]]
 do
 	# get fourth column (listening address and port), then select the port number (after last colon)
 	listening_port=$(cut -d ' ' -f 4 <<< $line | awk -F":" '{print $NF}')
@@ -12,10 +14,11 @@ do
 
 	if [[ $OPEN_PORTS =~ $listening_port ]]
 	then
-		echo $listening_port OK
+		update_count "OPEN_PORTS" 1 0 0
 	else
-		echo -e "WARNING!!!\t$listening_port is OPEN by $listening_server and should not be!\tWARNING!!!" 1>&2
+		update_count "OPEN_PORTS" 0 1 0
+		echo -e "WARNING!!!\t$listening_port is OPEN by $listening_server and should not be!"
 	fi
-done
+done <<< "$(netstat -velvetnwp | tail -n +3)"
 
-
+display_total

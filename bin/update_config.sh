@@ -1,6 +1,6 @@
 #!/bin/bash
 
-function usage()
+usage()
 {
 	echo "Usage: $0 <file> <key> <value>"
 	echo

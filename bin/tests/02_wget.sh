@@ -2,6 +2,7 @@
 
 source bin/config.sh
 
+source bin/tests/common.sh
 
 #verify HTTPS_REDIRECT
 headers=$(wget $SERVER_NAME -O /dev/null -Sq --max-redirect 0 --no-hsts 2>&1)
@@ -13,6 +14,7 @@ if [ $http_code -eq 200 ]
 then
 	if [ $HTTPS_REDIRECT -eq 1 ]
 	then
+		update_count "HTTPS_REDIRECT" 0 0 1
 		echo "ERROR: did not sucessfully redirect to HTTPS"
 	fi
 else
@@ -20,11 +22,15 @@ else
 	then
 		if [ $HTTPS_REDIRECT -eq 0 ]
 		then
+			update_count "HTTPS_REDIRECT" 0 0 1
 			echo "ERROR: incorrectly redirected to $http_redirect"
 		else
 			if [ $http_redirect != "https://$SERVER_NAME/" ]
 			then
+				update_count "HTTPS_REDIRECT" 0 0 1
 				echo "ERROR: incorrectly redirected to $http_redirect"
+			else
+				update_count "HTTPS_REDIRECT" 1 0 0
 			fi
 		fi
 	fi
@@ -40,7 +46,13 @@ if [ $? -ne 0 ]
 then
 	if [ $HSTS -eq 1 ]
 	then
+		update_count "HSTS CLIENT REDIRECT" 0 0 1
 		echo "ERROR: HSTS does not seem to be working. Client-side redirection failed."
+	fi
+else
+	if [ $HSTS -eq 1 ]
+	then
+		update_count "HSTS CLIENT REDIRECT" 1 0 0
 	fi
 fi
 
@@ -48,15 +60,22 @@ fi
 headers=$(wget $SERVER_NAME -O /dev/null -Sq --no-check-certificate 2>&1)
 if grep -i "Strict-Transport-Security" <<< "$headers" > /dev/null
 then
-	echo "Found HSTS headers!"
+	update_count "HSTS HEADER" 1 0 0
 else
-	echo "ouch $headers"
+	update_count "HSTS HEADER" 0 0 1
+	echo "ERROR: HSTS does not seem to be working. No HSTS headers detected in server response."
 fi
 #  Strict-Transport-Security: max-age=86400; includeSubdomains
 
 #verify SERVER_CERT
-#this will return the headers for the immediately requested page, ignoring HSTS
-#wget $SERVER_NAME -O - --save-headers --max-redirect 0 --no-hsts --ca-certificate=$SERVER_CERT
+wget https://$SERVER_NAME -O /dev/null -q --ca-certificate=$SERVER_CERT
 
+if [ $? -eq 0 ]
+then
+	update_count "CERTIFICATE" 1 0 0
+else
+	update_count "CERTIFICATE" 0 0 1
+	echo "Certificate does not seem to be correct."
+fi
 
-#--no-check-certificate
+display_total
